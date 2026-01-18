@@ -2,7 +2,30 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { NewsArticle } from "../types";
 
+/**
+ * Utility to extract JSON from a string that might contain markdown code blocks.
+ */
+const extractJson = (text: string) => {
+  try {
+    // Attempt to find content between ```json and ``` or just ``` and ```
+    const regex = /```json\s*([\s\S]*?)\s*```|```\s*([\s\S]*?)\s*```/;
+    const match = text.match(regex);
+    const jsonStr = match ? (match[1] || match[2]) : text;
+    return JSON.parse(jsonStr.trim());
+  } catch (e) {
+    console.error("JSON Extraction failed for text:", text);
+    // Fallback: try to find the first [ and last ]
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start !== -1 && end !== -1) {
+      return JSON.parse(text.substring(start, end + 1));
+    }
+    throw e;
+  }
+};
+
 export const fetchCustomNews = async (subject: string, sources: string[]): Promise<NewsArticle[]> => {
+  console.log(`Initiating news fetch for subject: ${subject}`);
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
@@ -17,7 +40,7 @@ export const fetchCustomNews = async (subject: string, sources: string[]): Promi
     1. Provide a professional newspaper-style headline.
     2. Provide a 2-3 sentence summary that synthesizes the key facts.
     3. Identify the specific source publication name.
-    4. Provide a relevant category.
+    4. Provide a relevant category (e.g., COGNITIVE SCIENCE, ETHICS, NEUROSCIENCE).
     5. Provide the actual publication date.
     6. Provide 3 keywords for visual context.
     7. CRITICAL: You MUST provide the direct, valid external URL to the full article on the source's website. Use the Google Search tool to find the specific deep link to the story.
@@ -49,7 +72,7 @@ export const fetchCustomNews = async (subject: string, sources: string[]): Promi
       },
     });
 
-    const articlesJson = JSON.parse(response.text || "[]");
+    const articlesJson = extractJson(response.text || "[]");
     const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     
     return articlesJson.map((article: any, index: number): NewsArticle => {
@@ -62,8 +85,6 @@ export const fetchCustomNews = async (subject: string, sources: string[]): Promi
                            !finalUrl.startsWith("http");
 
       if (isSuspicious && groundingChunks.length > 0) {
-        // Attempt to find a matching URL from grounding metadata
-        // We look for chunks that mention the source or have titles similar to the generated headline
         const wordsInTitle = article.title.toLowerCase().split(/\s+/).filter((w: string) => w.length > 3);
         
         const bestMatch = groundingChunks.find(chunk => {
@@ -71,20 +92,16 @@ export const fetchCustomNews = async (subject: string, sources: string[]): Promi
           const chunkTitle = chunk.web.title?.toLowerCase() || "";
           const chunkUri = chunk.web.uri.toLowerCase();
           
-          // Check if the chunk URL contains the source name
           const sourceMatch = article.source.toLowerCase().replace(/\s/g, '').includes(chunkUri.split('.')[1]) ||
                               chunkUri.includes(article.source.toLowerCase().replace(/\s/g, ''));
           
-          // Check if any significant words from the title appear in the chunk title
           const titleMatch = wordsInTitle.some(word => chunkTitle.includes(word));
-          
           return sourceMatch || titleMatch;
         });
 
         if (bestMatch?.web?.uri) {
           finalUrl = bestMatch.web.uri;
         } else if (groundingChunks[index]?.web?.uri) {
-          // Fallback to the chunk at the same index if title matching fails
           finalUrl = groundingChunks[index].web.uri;
         }
       }
@@ -101,7 +118,7 @@ export const fetchCustomNews = async (subject: string, sources: string[]): Promi
       };
     });
   } catch (error) {
-    console.error("Error in fetchCustomNews:", error);
+    console.error("CRITICAL ERROR in fetchCustomNews:", error);
     throw error;
   }
 };
@@ -123,7 +140,7 @@ export const suggestSourcesForSubject = async (subject: string): Promise<string[
       }
     });
 
-    return JSON.parse(response.text || "[]");
+    return extractJson(response.text || "[]");
   } catch (error) {
     console.error("Error suggesting sources:", error);
     return [];
