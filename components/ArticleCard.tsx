@@ -4,55 +4,47 @@ import { NewsArticle } from '../types';
 
 interface ArticleCardProps {
   article: NewsArticle;
-  isMain?: boolean;
   isColorful?: boolean;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, isMain, isColorful }) => {
-  // Assign a semi-random primary color if isColorful is true
-  const colors = ['bg-mondrian-red', 'bg-mondrian-blue', 'bg-mondrian-yellow', 'bg-white'];
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, isColorful }) => {
+  const colors = ['bg-red', 'bg-blue', 'bg-yellow', 'bg-white'];
   const colorIndex = Math.floor(Math.random() * colors.length);
   const accentColor = isColorful ? colors[colorIndex] : 'bg-white';
-  const textColor = accentColor === 'bg-mondrian-blue' || accentColor === 'bg-mondrian-red' ? 'text-white' : 'text-black';
+  const textColor = accentColor === 'bg-blue' || accentColor === 'bg-red' ? 'text-white' : 'text-black';
 
   return (
-    <article className="flex flex-col h-full mondrian-border group transition-transform hover:translate-x-1 hover:translate-y-1">
-      {/* Meta Header */}
-      <div className={`mondrian-border-b px-4 py-3 flex justify-between items-start ${isColorful ? 'bg-black text-white' : 'bg-white text-black'}`}>
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none">{article.category}</span>
-          <span className={`text-[9px] font-bold uppercase opacity-80 ${isColorful ? 'text-mondrian-yellow' : 'text-black'}`}>
-            {article.source}
-          </span>
+    <article className="border-heavy d-flex flex-col bg-white transition-all" style={{height: '100%'}}>
+      <div className={`border-b d-flex justify-between items-center ${isColorful ? 'bg-black text-white' : 'bg-white text-black'}`} style={{padding: '10px 16px'}}>
+        <div className="d-flex flex-col">
+          <span style={{fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em'}}>{article.category}</span>
+          <span style={{fontSize: '8px', fontWeight: '700', opacity: 0.7}}>{article.source}</span>
         </div>
-        <span className="text-[10px] font-black">{article.date}</span>
+        <span style={{fontSize: '9px', fontWeight: '900'}}>{article.date}</span>
       </div>
 
-      {/* Content Block */}
-      <div className={`p-6 flex-grow flex flex-col justify-center ${accentColor} ${textColor} transition-colors duration-500`}>
-        <h2 className="mondrian-title text-2xl mb-4 leading-tight font-black tracking-tighter">
-          <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+      <div className={`flex-grow d-flex flex-col justify-center ${accentColor} ${textColor}`} style={{padding: '24px'}}>
+        <h2 className="mondrian-title" style={{fontSize: '1.5rem', marginBottom: '16px'}}>
+          <a href={article.url} target="_blank" rel="noopener noreferrer" style={{color: 'inherit', textDecoration: 'none'}}>
             {article.title}
           </a>
         </h2>
-        <div className={`w-12 h-1 mb-4 ${textColor === 'text-white' ? 'bg-white' : 'bg-black'} opacity-30`}></div>
-        <p className="text-sm leading-relaxed font-bold opacity-90 italic">
+        <div style={{width: '40px', height: '4px', background: textColor === 'text-white' ? '#fff' : '#000', marginBottom: '16px', opacity: 0.3}}></div>
+        <p style={{fontSize: '14px', lineHeight: '1.6', fontWeight: '600', fontStyle: 'italic'}}>
           {article.summary}
         </p>
       </div>
 
-      {/* Footer/Link Block */}
-      <div className={`mondrian-border-t p-4 flex justify-between items-center bg-white`}>
+      <div className="border-t d-flex justify-between items-center bg-white" style={{padding: '16px'}}>
         <a 
           href={article.url} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-[10px] font-black uppercase tracking-widest hover:text-mondrian-red transition-colors flex items-center gap-2"
+          style={{fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', color: '#000', textDecoration: 'none'}}
         >
-          READ FULL DISPATCH 
-          <span className="text-lg">→</span>
+          READ FULL DISPATCH →
         </a>
-        <div className="w-6 h-6 mondrian-border bg-black"></div>
+        <div className="border-heavy bg-black" style={{width: '20px', height: '20px'}}></div>
       </div>
     </article>
   );

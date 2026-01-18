@@ -15,7 +15,6 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   
-  // Theme state with local persistence
   const [theme, setTheme] = useState<'mondrian' | 'classic'>(() => {
     return (localStorage.getItem('app-theme') as 'mondrian' | 'classic') || 'mondrian';
   });
@@ -24,13 +23,15 @@ const App: React.FC = () => {
     return saved !== null ? saved === 'true' : true;
   });
   
-  const [subject, setSubject] = useState("latest in psychology and philosophy");
+  // Psychology & Philosophy Defaults
+  const [subject, setSubject] = useState("latest insights in psychology and philosophy");
   const [sources, setSources] = useState([
     "Psychology Today", 
     "Scientific American", 
     "Aeon", 
     "Philosophy Now", 
-    "Stanford Encyclopedia of Philosophy"
+    "Stanford Encyclopedia of Philosophy",
+    "Mind & Language"
   ]);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const App: React.FC = () => {
       
       setLastUpdated(new Date());
     } catch (err) {
-      setError("THE GRID HAS FAILED TO RESPOND. WIRE CONNECTION LOST.");
+      setError("TRANSMISSION LOST. THE ACADEMIC WIRE IS DOWN.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -97,7 +98,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className={`max-w-[1400px] mx-auto p-4 md:p-10 transition-colors duration-500`}>
+    <div className="container transition-all">
       <Header 
         onRefresh={() => loadNews(false)} 
         onSuggestSources={handleSuggestSources}
@@ -124,35 +125,36 @@ const App: React.FC = () => {
       />
 
       {error && (
-        <div className="mondrian-border bg-mondrian-red text-white p-8 my-10 text-center">
-          <p className="mondrian-title text-3xl mb-4">{error}</p>
+        <div className="border-heavy bg-red text-white container" style={{textAlign: 'center', marginTop: '40px', padding: '40px'}}>
+          <p className="mondrian-title" style={{fontSize: '2rem', marginBottom: '20px'}}>{error}</p>
           <button 
             onClick={() => loadNews(false)}
-            className="mondrian-border bg-white text-black px-6 py-2 mondrian-title text-sm hover:bg-black hover:text-white transition-colors"
+            className="border-heavy bg-white text-black mondrian-title"
+            style={{padding: '10px 30px', cursor: 'pointer'}}
           >
-            RESTORE TRANSMISSION
+            RE-TYPESET FEED
           </button>
         </div>
       )}
 
       {isLoading && articles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-40 mondrian-border border-t-0 bg-white/50">
-          <div className="animate-pulse flex flex-col items-center text-center">
-            <div className="mondrian-title text-6xl md:text-8xl mb-6">CURATING...</div>
-            <div className="flex gap-4">
-                <div className="w-8 h-8 bg-mondrian-red mondrian-border"></div>
-                <div className="w-8 h-8 bg-mondrian-blue mondrian-border"></div>
-                <div className="w-8 h-8 bg-mondrian-yellow mondrian-border"></div>
+        <div className="border-heavy d-flex flex-col items-center justify-center bg-white" style={{padding: '100px 0', borderTop: 'none'}}>
+          <div className="animate-pulse d-flex flex-col items-center">
+            <div className="mondrian-title" style={{fontSize: '4rem', marginBottom: '20px'}}>SYNTHESIZING...</div>
+            <div className="d-flex" style={{gap: '20px'}}>
+                <div className="border-heavy bg-red" style={{width: '40px', height: '40px'}}></div>
+                <div className="border-heavy bg-blue" style={{width: '40px', height: '40px'}}></div>
+                <div className="border-heavy bg-yellow" style={{width: '40px', height: '40px'}}></div>
             </div>
           </div>
         </div>
       ) : articles.length === 0 && !isLoading ? (
-        <div className="py-20 text-center mondrian-title text-xl mondrian-border bg-white/50">
-          EDITION EMPTY. DEFINE SUBJECT TO BEGIN.
+        <div className="border-heavy bg-white" style={{padding: '80px', textAlign: 'center', borderTop: 'none'}}>
+          <span className="mondrian-title">EDITION PENDING. DEFINE SUBJECT.</span>
         </div>
       ) : (
-        <div className="mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div style={{marginTop: '40px'}}>
+          <div className="grid grid-cols-1 grid-md-2 grid-lg-3">
             {articles.map((article) => (
               <ArticleCard 
                 key={article.id}
@@ -163,40 +165,32 @@ const App: React.FC = () => {
           </div>
 
           {articles.length > 0 && (
-            <div className="mt-16 flex flex-col items-center">
+            <div style={{marginTop: '60px', textAlign: 'center'}}>
               <button
                 onClick={() => loadNews(true)}
                 disabled={isLoadingMore}
-                className="w-full md:w-auto mondrian-border bg-black text-white px-16 py-6 hover:bg-white hover:text-black transition-all active:scale-95 disabled:opacity-50"
+                className="btn-press"
+                style={{maxWidth: '400px'}}
               >
-                <div className="flex flex-col items-center">
-                  <span className="mondrian-title text-2xl tracking-[0.2em]">
-                    {isLoadingMore ? 'AUGMENTING...' : 'EXPAND COVERAGE'}
-                  </span>
-                  <span className="text-[10px] font-black uppercase mt-2 tracking-widest opacity-60">
-                    Retrieve Further Dispatches
-                  </span>
-                </div>
+                {isLoadingMore ? 'LOADING DISPATCHES...' : 'EXPAND COVERAGE'}
               </button>
             </div>
           )}
         </div>
       )}
 
-      <footer className="mt-20 flex mondrian-border h-24 overflow-hidden bg-white">
-        <div className={`w-1/3 bg-mondrian-yellow mondrian-border-r hidden md:block ${theme === 'classic' ? 'opacity-20' : ''}`}></div>
-        <div className="flex-grow flex items-center justify-center px-4">
-           <div className="text-center">
-                <div className="mondrian-title text-xl uppercase tracking-widest">
-                  {theme === 'classic' ? 'The Universal Press' : 'De Stijl Newsroom'}
-                </div>
-                <div className="text-[9px] font-black uppercase tracking-[0.3em] opacity-40">
-                  {lastUpdated ? `LAST SYNC: ${lastUpdated.toLocaleTimeString()}` : 'AI-GROUNDED VERIFICATION ENGINE'}
+      <footer className="border-heavy d-flex bg-white" style={{height: '100px', marginTop: '80px', overflow: 'hidden'}}>
+        <div className="bg-yellow border-r" style={{width: '33%', opacity: theme === 'classic' ? 0.2 : 1}}></div>
+        <div className="flex-grow d-flex items-center justify-center">
+           <div style={{textAlign: 'center'}}>
+                <div className="mondrian-title" style={{fontSize: '1.2rem'}}>The Universal Dispatch</div>
+                <div style={{fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', opacity: 0.4, letterSpacing: '0.3em'}}>
+                  {lastUpdated ? `LAST SYNC: ${lastUpdated.toLocaleTimeString()}` : 'AI-POWERED ANALYSIS'}
                 </div>
            </div>
         </div>
-        <div className="w-12 bg-mondrian-red mondrian-border-l opacity-80"></div>
-        <div className="w-12 bg-mondrian-blue mondrian-border-l opacity-80"></div>
+        <div className="bg-red border-l" style={{width: '50px', opacity: 0.8}}></div>
+        <div className="bg-blue border-l" style={{width: '50px', opacity: 0.8}}></div>
       </footer>
     </div>
   );

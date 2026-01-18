@@ -24,7 +24,6 @@ const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   isLoading, 
   isSuggestingSources,
-  lastUpdated, 
   theme,
   subject,
   setSubject,
@@ -46,134 +45,93 @@ const Header: React.FC<HeaderProps> = ({
   };
   const removeSource = (index: number) => setSources(sources.filter((_, i) => i !== index));
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      onRefresh();
-    }
-  };
-
   return (
-    <header className="mb-8">
-      {/* Top Identity Row */}
-      <div className="flex mondrian-border h-32 overflow-hidden bg-white">
-        <div className={`w-1/4 ${theme === 'classic' ? 'bg-white' : 'bg-mondrian-red'} mondrian-border-r flex items-center justify-center transition-colors duration-500`}>
+    <header style={{marginBottom: '40px'}}>
+      <div className="border-heavy d-flex bg-white" style={{height: '130px', overflow: 'hidden'}}>
+        <div className={`border-r d-flex items-center justify-center transition-all ${theme === 'classic' ? 'bg-white' : 'bg-red'}`} style={{width: '25%'}}>
             {theme === 'classic' ? (
-               <div className="w-16 h-16 border-4 border-double border-black rounded-full flex items-center justify-center">
-                  <span className="font-serif italic text-3xl font-black">G</span>
+               <div className="border-heavy justify-center items-center d-flex" style={{width: '60px', height: '60px', borderRadius: '50%', borderStyle: 'double'}}>
+                  <span className="mondrian-title" style={{fontSize: '1.5rem'}}>G</span>
                </div>
             ) : (
-               <span className="mondrian-title text-white text-xs rotate-[-90deg]">PRIMARY BLOCK</span>
+               <span className="mondrian-title text-white" style={{fontSize: '10px', transform: 'rotate(-90deg)'}}>PRIMARY DISPATCH</span>
             )}
         </div>
-        <div className="flex-grow flex flex-col">
-            <div className="h-2/3 flex items-center px-8 relative">
-                <h1 className="mondrian-title text-2xl md:text-5xl lg:text-6xl tracking-tighter transition-all">
+        <div className="flex-grow d-flex flex-col">
+            <div className="flex-grow d-flex items-center" style={{padding: '0 30px', position: 'relative'}}>
+                <h1 className="mondrian-title" style={{fontSize: 'clamp(1.5rem, 5vw, 4rem)', letterSpacing: '-0.02em'}}>
                     THE {theme === 'classic' ? 'UNIVERSAL' : 'DE STIJL'} GAZETTE
                 </h1>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  <button 
-                    onClick={onToggleTheme}
-                    className="w-10 h-10 flex items-center justify-center hover:bg-black/5 rounded-full transition-colors"
-                    title="Toggle Theme"
-                  >
-                    {theme === 'mondrian' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                    )}
+                <div style={{position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '10px'}}>
+                  <button onClick={onToggleTheme} style={{padding: '8px', borderRadius: '50%'}}>
+                    {theme === 'mondrian' ? '🌙' : '☀️'}
                   </button>
-                  <button 
-                    onClick={onOpenSettings}
-                    className="w-10 h-10 flex items-center justify-center hover:rotate-45 transition-transform duration-300"
-                    title="Settings"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </button>
+                  <button onClick={onOpenSettings} style={{padding: '8px'}}>⚙️</button>
                 </div>
             </div>
-            <div className={`h-1/3 mondrian-border-t flex justify-between items-center px-4 text-[10px] font-black uppercase tracking-widest ${theme === 'classic' ? 'bg-gray-100 italic' : 'bg-white'}`}>
-                <span>INTELLIGENCE FEED: {subject.substring(0, 20)}...</span>
-                <span className="hidden sm:inline">{formattedDate}</span>
-                <span>EDITION v.2.5</span>
+            <div className="border-t d-flex justify-between items-center bg-white" style={{padding: '8px 20px', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em'}}>
+                <span>FEED: {subject.substring(0, 30)}...</span>
+                <span className="hidden-mobile">{formattedDate}</span>
+                <span>v.3.0</span>
             </div>
         </div>
-        <div className={`w-12 md:w-20 ${theme === 'classic' ? 'bg-gray-200' : 'bg-mondrian-blue'} mondrian-border-l transition-colors duration-500`}></div>
+        <div className={`border-l transition-all ${theme === 'classic' ? 'bg-white' : 'bg-blue'}`} style={{width: '60px'}}></div>
       </div>
 
-      {/* Editorial Desk */}
-      <div className={`grid grid-cols-1 md:grid-cols-3 mondrian-border mondrian-border-t-0 ${theme === 'classic' ? 'bg-[#fcfaf2]/50' : 'bg-white'}`}>
-        <div className="col-span-2 mondrian-border-r p-6">
-          <label className="text-[10px] font-black uppercase mb-2 block tracking-[0.2em]">Inquiry Vector</label>
+      <div className="grid grid-cols-1 grid-md-3 border-heavy" style={{borderTop: 'none'}}>
+        <div className="border-r" style={{gridColumn: 'span 2', padding: '24px'}}>
+          <label style={{fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '8px', display: 'block'}}>Subject Analysis</label>
           <input 
             type="text" 
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className={`w-full mondrian-title text-xl md:text-3xl lg:text-4xl outline-none focus:text-mondrian-red transition-colors bg-transparent border-b-2 ${theme === 'classic' ? 'border-gray-300 italic' : 'border-black pb-2'}`}
+            onKeyDown={(e) => e.key === 'Enter' && onRefresh()}
+            className="mondrian-title"
+            style={{fontSize: '2rem', borderBottom: '2px solid #000'}}
             placeholder="DEFINE SUBJECT..."
           />
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={onSuggestSources}
-              disabled={isSuggestingSources || !subject}
-              className={`mondrian-border px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all disabled:opacity-30 ${theme === 'classic' ? 'italic bg-white shadow-none' : 'bg-white'}`}
-            >
-              {isSuggestingSources ? 'CALIBRATING...' : 'SUGGEST REPOSITORIES'}
-            </button>
-          </div>
+          <button
+            onClick={onSuggestSources}
+            disabled={isSuggestingSources || !subject}
+            className="border-heavy transition-all"
+            style={{marginTop: '20px', padding: '8px 16px', fontSize: '10px', fontWeight: '900', background: '#fff'}}
+          >
+            {isSuggestingSources ? 'CALIBRATING...' : 'SUGGEST REPOSITORIES'}
+          </button>
         </div>
 
-        <div className={`p-6 ${theme === 'classic' ? 'bg-white' : 'bg-mondrian-yellow'} flex flex-col transition-colors duration-500`}>
-          <label className="text-[10px] font-black uppercase mb-2 block tracking-[0.2em]">Source Matrix</label>
-          <div className="space-y-2 flex-grow max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+        <div className={`transition-all d-flex flex-col ${theme === 'classic' ? 'bg-white' : 'bg-yellow'}`} style={{padding: '24px'}}>
+          <label style={{fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '8px', display: 'block'}}>Wire Sources</label>
+          <div className="custom-scrollbar" style={{maxHeight: '150px', overflowY: 'auto', marginBottom: '10px'}}>
             {sources.map((src, idx) => (
-              <div key={idx} className="flex gap-2 items-center">
+              <div key={idx} style={{display: 'flex', gap: '10px', marginBottom: '8px', alignItems: 'center'}}>
                 <input 
                   type="text" 
                   value={src}
                   onChange={(e) => updateSource(idx, e.target.value)}
-                  className="flex-grow bg-white border border-black/10 px-2 py-1 text-[10px] font-bold outline-none focus:border-black"
-                  placeholder="SOURCE NAME..."
+                  style={{fontSize: '10px', fontWeight: '700', border: '1px solid rgba(0,0,0,0.1)', background: '#fff', padding: '4px'}}
                 />
-                <button onClick={() => removeSource(idx)} className="font-black text-xs hover:text-red-600 transition-colors">✕</button>
+                <button onClick={() => removeSource(idx)} style={{fontWeight: '900', color: 'red'}}>✕</button>
               </div>
             ))}
           </div>
-          <button 
-            onClick={addSource}
-            className="mt-4 w-full text-[9px] font-black border-2 border-black bg-white py-1 hover:bg-black hover:text-white transition-all"
-          >
-            + ADD WIRE
-          </button>
+          <button onClick={addSource} style={{fontSize: '9px', fontWeight: '900', border: '1px solid #000', padding: '4px'}}>+ ADD SOURCE</button>
         </div>
       </div>
 
-      {/* Execution Block */}
-      <div className="mondrian-border mondrian-border-t-0 h-16 flex bg-white">
-        <div className={`w-16 ${theme === 'classic' ? 'bg-white' : 'bg-mondrian-blue'} mondrian-border-r transition-colors`}></div>
+      <div className="border-heavy d-flex bg-white" style={{borderTop: 'none', height: '60px'}}>
+        <div className={`border-r ${theme === 'classic' ? 'bg-white' : 'bg-blue'}`} style={{width: '60px'}}></div>
         <button
           onClick={onRefresh}
           disabled={isLoading || !subject}
-          className="flex-grow flex items-center justify-center group relative hover:bg-black transition-colors"
+          className="flex-grow d-flex items-center justify-center transition-all btn-press"
+          style={{border: 'none', height: '100%', padding: '0'}}
         >
-          <span className={`mondrian-title text-xl tracking-[0.3em] transition-colors group-hover:text-white ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
-            {articlesExist ? 'RE-TYPESET CURRENT FEED' : 'INITIATE PRESS CYCLE'}
+          <span className="mondrian-title" style={{fontSize: '1.2rem', letterSpacing: '0.2em'}}>
+            {isLoading ? 'WORKING...' : (articlesExist ? 'RE-TYPESET EDITION' : 'INITIATE PRESS CYCLE')}
           </span>
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center gap-3">
-              <div className="animate-spin h-5 w-5 border-2 border-black group-hover:border-white border-t-transparent rounded-full" />
-              <span className="mondrian-title text-xs group-hover:text-white">PROCESSING DATA...</span>
-            </div>
-          )}
         </button>
-        <div className={`w-1/4 ${theme === 'classic' ? 'bg-white border-l-2 border-double border-black' : 'bg-mondrian-red mondrian-border-l'} transition-colors`}></div>
+        <div className={`border-l ${theme === 'classic' ? 'bg-white' : 'bg-red'}`} style={{width: '25%'}}></div>
       </div>
     </header>
   );

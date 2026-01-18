@@ -21,62 +21,57 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 settings-overlay">
-      <div className="bg-white mondrian-border w-full max-w-md p-8 shadow-2xl">
-        <div className="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
-          <h2 className="mondrian-title text-2xl">App Settings</h2>
-          <button onClick={onClose} className="text-2xl font-black hover:text-mondrian-red transition-colors">✕</button>
+    <div className="settings-overlay">
+      <div className="bg-white border-heavy" style={{width: '100%', maxWidth: '450px', padding: '40px'}}>
+        <div className="d-flex justify-between items-center border-b" style={{marginBottom: '30px', paddingBottom: '15px'}}>
+          <h2 className="mondrian-title" style={{fontSize: '1.5rem'}}>Gazette Settings</h2>
+          <button onClick={onClose} style={{fontSize: '2rem', fontWeight: '900'}}>✕</button>
         </div>
 
-        <div className="space-y-8">
+        <div style={{display: 'flex', flexDirection: 'column', gap: '30px'}}>
           <section>
-            <label className="text-[10px] font-black uppercase tracking-widest block mb-4">Visual Style</label>
-            <div className="grid grid-cols-2 gap-4">
+            <label style={{fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', marginBottom: '15px', display: 'block'}}>Editorial Style</label>
+            <div className="grid grid-md-2" style={{gap: '15px'}}>
               <button 
                 onClick={() => setTheme('mondrian')}
-                className={`p-4 mondrian-border transition-all ${theme === 'mondrian' ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
+                className="border-heavy transition-all"
+                style={{padding: '15px', background: theme === 'mondrian' ? '#000' : '#fff', color: theme === 'mondrian' ? '#fff' : '#000'}}
               >
-                <div className="mondrian-title text-sm">Mondrian</div>
-                <div className="text-[8px] uppercase mt-1 opacity-60">Modernist Abstract</div>
+                <div className="mondrian-title">Mondrian</div>
               </button>
               <button 
                 onClick={() => setTheme('classic')}
-                className={`p-4 mondrian-border transition-all ${theme === 'classic' ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
+                className="border-heavy transition-all"
+                style={{padding: '15px', background: theme === 'classic' ? '#000' : '#fff', color: theme === 'classic' ? '#fff' : '#000'}}
               >
-                <div className="mondrian-title text-sm">Classic</div>
-                <div className="text-[8px] uppercase mt-1 opacity-60">Traditional News</div>
+                <div className="mondrian-title">Classic</div>
               </button>
             </div>
           </section>
 
           <section>
-            <label className="text-[10px] font-black uppercase tracking-widest block mb-4">Color Palette</label>
             <button 
               onClick={() => setIsColorful(!isColorful)}
-              className={`w-full p-4 mondrian-border flex justify-between items-center transition-all ${isColorful ? 'bg-mondrian-yellow' : 'bg-gray-200'}`}
+              className="border-heavy d-flex justify-between items-center transition-all"
+              style={{width: '100%', padding: '15px', background: isColorful ? 'var(--mondrian-yellow)' : '#eee'}}
             >
-              <span className="font-bold text-xs uppercase tracking-widest">
-                {isColorful ? 'Vivid Highlights' : 'Grayscale Mode'}
-              </span>
-              <div className={`w-10 h-6 border-2 border-black rounded-full relative transition-colors ${isColorful ? 'bg-black' : 'bg-white'}`}>
-                <div className={`absolute top-0.5 w-4 h-4 rounded-full border border-black transition-all ${isColorful ? 'right-0.5 bg-mondrian-red' : 'left-0.5 bg-gray-400'}`} />
+              <span style={{fontWeight: '900', textTransform: 'uppercase', fontSize: '10px'}}>Vivid Highlights</span>
+              <div className="border-heavy" style={{width: '40px', height: '20px', position: 'relative', background: '#fff'}}>
+                <div style={{
+                  position: 'absolute', top: '2px', bottom: '2px', width: '12px', background: '#000',
+                  transition: '0.3s', left: isColorful ? '22px' : '2px'
+                }}></div>
               </div>
             </button>
-          </section>
-
-          <section className="bg-gray-100 p-4 border-2 border-dashed border-gray-400">
-            <label className="text-[10px] font-black uppercase tracking-widest block mb-2 opacity-60">System Information</label>
-            <p className="text-[9px] font-bold leading-relaxed text-gray-500">
-              API Key is managed by the system environment. Your current session is grounded using Google Search real-time verification.
-            </p>
           </section>
         </div>
 
         <button 
           onClick={onClose}
-          className="mt-10 w-full py-4 bg-black text-white mondrian-title text-sm hover:bg-mondrian-red transition-colors"
+          className="btn-press"
+          style={{marginTop: '40px', padding: '15px'}}
         >
-          Save & Return
+          RETURN TO PRESS
         </button>
       </div>
     </div>
