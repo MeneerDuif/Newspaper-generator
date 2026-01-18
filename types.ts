@@ -1,4 +1,3 @@
-
 export interface NewsArticle {
   id: string;
   title: string;
@@ -8,9 +7,4 @@ export interface NewsArticle {
   date: string;
   category: string;
   visualKeywords: string;
-}
-
-export interface GroundingSource {
-  title: string;
-  url: string;
 }
